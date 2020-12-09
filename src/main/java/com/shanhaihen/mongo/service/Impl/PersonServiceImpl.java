@@ -33,7 +33,8 @@ public class PersonServiceImpl implements IPersonService {
 
     @Override
     public List<PersonInfo> query(PersonInfo personInfo) {
-        return null;
+        Query query = createScPersonInfoQuery(personInfo);
+        return personDao.queryList(query);
     }
 
     @Override
