@@ -63,4 +63,8 @@ public class PersonInfo implements Serializable {
      */
     private List<Address> addresses;
 
+    private Integer pageNo;
+
+    private Integer pageSize;
+
 }
