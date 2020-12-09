@@ -63,14 +63,34 @@ public class PersonServiceImpl implements IPersonService {
 
     private Query createScPersonInfoQuery(PersonInfo personInfo) {
         Query query = new Query();
-        if (StringUtils.isNotBlank(personInfo.getName())) {
+
+        if (StringUtils.isNotBlank(personInfo.getIdNumber()) && StringUtils.isNotBlank(personInfo.getName())) {
+            //mongo or搜索
+            query.addCriteria(new Criteria().orOperator(
+                    Criteria.where("idNumber").regex(".*?" + personInfo.getIdNumber().replace("*", "\\*") + ".*"),
+                    Criteria.where("name").regex(".*?" + personInfo.getName().replace("*", "\\*") + ".*")));
+        } else if (StringUtils.isNotBlank(personInfo.getName())) {
             query.addCriteria(Criteria.where("name").regex(".*?" + personInfo.getName().replace("*", "\\*") + ".*"));
+        } else if (StringUtils.isNotBlank(personInfo.getIdNumber())) {
+            query.addCriteria(Criteria.where("idNumber").regex(".*?" + personInfo.getIdNumber().replace("*", "\\*") + ".*"));
         }
+
         if (Objects.nonNull(personInfo.getGender())) {
             query.addCriteria(Criteria.where("gender").is(personInfo.getGender()));
         }
-        if (StringUtils.isNotBlank(personInfo.getIdNumber())) {
-            query.addCriteria(Criteria.where("idNumber").regex(".*?" + personInfo.getIdNumber().replace("*", "\\*") + ".*"));
+
+        //in 查询
+        if (Objects.nonNull(personInfo.getPhoneNums())) {
+            query.addCriteria(Criteria.where("phoneNums").elemMatch(Criteria.where("$in").is(personInfo.getPhoneNums())));
+        }
+        //子查询
+        String province = personInfo.getProvince();
+        if (StringUtils.isNotBlank(province)) {
+            query.addCriteria(Criteria.where("addresses.province").is(province));
+        }
+        String city = personInfo.getCity();
+        if (StringUtils.isNotBlank(city)) {
+            query.addCriteria(Criteria.where("addresses.city").is(city));
         }
         return query;
     }

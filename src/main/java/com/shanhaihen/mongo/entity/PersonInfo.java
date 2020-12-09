@@ -67,4 +67,17 @@ public class PersonInfo implements Serializable {
 
     private Integer pageSize;
 
+    /**
+     * 省
+     */
+    private String province;
+    /**
+     * 市
+     */
+    private String city;
+    /**
+     * 区
+     */
+    private String area;
+
 }
