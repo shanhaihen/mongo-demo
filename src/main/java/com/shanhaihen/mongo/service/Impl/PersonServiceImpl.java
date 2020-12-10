@@ -5,7 +5,6 @@ import com.shanhaihen.mongo.entity.Page;
 import com.shanhaihen.mongo.entity.PersonInfo;
 import com.shanhaihen.mongo.service.IPersonService;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,7 +54,7 @@ public class PersonServiceImpl implements IPersonService {
             scPersonInfos = personDao.queryList(query);
             totalSize = personDao.getPageCount(query);
         } else {
-            scPersonInfos = Lists.newArrayList();
+            scPersonInfos = new ArrayList();
         }
         page.setRecords(scPersonInfos);
         page.setTotal(totalSize.intValue());
