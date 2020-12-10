@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -61,11 +62,11 @@ public class PersonTest {
 
     /**
      * 子数组，字段单个匹配,分别在两个数组中匹配了对应的字段
-     *   [{"addresses":[{"area":"1001","city":"101","province":"0"},
-     *   {"area":"1002","city":"102","province":"12"}],
-     *   "age":38,"gender":2,"idNumber":"133109198109182320",
-     *   "idType":"1","name":"张10",
-     *   "phoneNums":["13210981811","13312098911"]}]
+     * [{"addresses":[{"area":"1001","city":"101","province":"0"},
+     * {"area":"1002","city":"102","province":"12"}],
+     * "age":38,"gender":2,"idNumber":"133109198109182320",
+     * "idType":"1","name":"张10",
+     * "phoneNums":["13210981811","13312098911"]}]
      */
     @Test
     public void queryRegexListPersonInfo() {
@@ -78,15 +79,33 @@ public class PersonTest {
 
     /**
      * 子数组，字段全个匹配
+     * 注:只支持一个 andOperator
+     * 多个使用
+     * criteria.andOperator(
+     * Criteria.where("city").is("102"),
+     * Criteria.where("area").is("11")
+     * );
      */
 
     @Test
     public void queryAllRegexListPersonInfo() {
         Query query = new Query();
         //query.addCriteria(Criteria.where("addresses").elemMatch(Criteria.where("province").is("12").andOperator(Criteria.where("city").is("101"))));
-        query.addCriteria(Criteria.where("addresses").elemMatch(Criteria.where("province").is("12").andOperator(Criteria.where("city").is("102"))));
+        Criteria criteria = Criteria.where("province").is("12");
+        criteria.andOperator(Criteria.where("city").is("102"));
+        query.addCriteria(Criteria.where("addresses").elemMatch(criteria));
         List<Person> personList = personDao.queryList(query);
         System.out.println(JSON.toJSONString(personList));
+
+        Query query2 = new Query();
+        List<Criteria> criterias = new ArrayList<>();
+        criterias.add(Criteria.where("province").is("12"));
+        criterias.add(Criteria.where("city").is("102"));
+        query2.addCriteria(Criteria.where("addresses").elemMatch(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]))));
+        List<Person> personList1 = personDao.queryList(query);
+        System.out.println(JSON.toJSONString(personList1));
+
+
     }
 
 
