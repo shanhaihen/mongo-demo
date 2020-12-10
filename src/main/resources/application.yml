@@ -1,4 +1,4 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://nosql.shanhaihen.com:27017/test
+      uri: mongodb://nosql.shanhaihen.com:27017/demo

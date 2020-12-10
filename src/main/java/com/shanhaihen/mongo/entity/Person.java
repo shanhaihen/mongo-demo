@@ -30,7 +30,7 @@ import java.util.List;
  *
  */
 @Data
-public class PersonInfo implements Serializable {
+public class Person implements Serializable {
     private static final long serialVersionUID = 446583973455582001L;
     /**
      * 姓名

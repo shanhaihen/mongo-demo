@@ -1,17 +1,17 @@
 package com.shanhaihen.mongo.service;
 
 import com.shanhaihen.mongo.entity.Page;
-import com.shanhaihen.mongo.entity.PersonInfo;
+import com.shanhaihen.mongo.entity.Person;
 
 import java.util.List;
 
 public interface IPersonService {
 
-    void add(PersonInfo personInfo);
+    void add(Person person);
 
-    List<PersonInfo> query(PersonInfo personInfo);
+    List<Person> query(Person person);
 
-    Page<PersonInfo> queryPage(PersonInfo personInfo);
+    Page<Person> queryPage(Person person);
 
 
 }
