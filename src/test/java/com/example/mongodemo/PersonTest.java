@@ -2,6 +2,8 @@ package com.example.mongodemo;
 
 import com.alibaba.fastjson.JSON;
 import com.shanhaihen.mongo.MongoDemoApplication;
+import com.shanhaihen.mongo.base.PersonDao;
+import com.shanhaihen.mongo.entity.Page;
 import com.shanhaihen.mongo.entity.Person;
 import com.shanhaihen.mongo.service.IPersonService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +18,22 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MongoDemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
-public class QueryTest {
+public class PersonTest {
 
     @Autowired
     private IPersonService iPersonService;
+
+    @Autowired
+    private PersonDao personDao;
+
+    @Test
+    public void queryPersonPage() {
+        Person person = new Person();
+        person.setPageNo(1);
+        person.setPageSize(3);
+        Page<Person> personPage = iPersonService.queryPage(person);
+        System.out.println(JSON.toJSONString(personPage));
+    }
 
     @Test
     public void queryPersonInfo() {
