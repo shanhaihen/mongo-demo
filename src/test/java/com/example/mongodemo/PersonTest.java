@@ -1,16 +1,22 @@
 package com.example.mongodemo;
 
 import com.alibaba.fastjson.JSON;
+import com.mongodb.AggregationOptions;
+import com.mongodb.client.model.Collation;
 import com.shanhaihen.mongo.MongoDemoApplication;
 import com.shanhaihen.mongo.base.PersonDao;
 import com.shanhaihen.mongo.entity.Page;
 import com.shanhaihen.mongo.entity.Person;
+import com.shanhaihen.mongo.entity.PhoneCount;
 import com.shanhaihen.mongo.service.IPersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,6 +34,9 @@ public class PersonTest {
 
     @Autowired
     private PersonDao personDao;
+
+    @Autowired
+    protected MongoTemplate mongoTemplate;
 
     /**
      * 分页查询
@@ -86,7 +95,6 @@ public class PersonTest {
      * Criteria.where("area").is("11")
      * );
      */
-
     @Test
     public void queryAllRegexListPersonInfo() {
         Query query = new Query();
@@ -104,8 +112,20 @@ public class PersonTest {
         query2.addCriteria(Criteria.where("addresses").elemMatch(new Criteria().andOperator(criterias.toArray(new Criteria[criterias.size()]))));
         List<Person> personList1 = personDao.queryList(query);
         System.out.println(JSON.toJSONString(personList1));
+    }
 
-
+    /**
+     * 此方法适用于3.4.5的mongo 数据库
+     */
+    @Test
+    public void phoneCount() {
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.project("phoneNums"),
+                Aggregation.unwind("phoneNums"),
+                Aggregation.group("phoneNums").count().as("count")
+        );
+        AggregationResults<PhoneCount> aggregate = mongoTemplate.aggregate(agg, "person", PhoneCount.class);
+        System.out.println(aggregate.getMappedResults().size());
     }
 
 
