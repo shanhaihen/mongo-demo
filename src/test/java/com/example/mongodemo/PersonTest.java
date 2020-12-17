@@ -1,8 +1,6 @@
 package com.example.mongodemo;
 
 import com.alibaba.fastjson.JSON;
-import com.mongodb.AggregationOptions;
-import com.mongodb.client.model.Collation;
 import com.shanhaihen.mongo.MongoDemoApplication;
 import com.shanhaihen.mongo.base.PersonDao;
 import com.shanhaihen.mongo.entity.Page;
