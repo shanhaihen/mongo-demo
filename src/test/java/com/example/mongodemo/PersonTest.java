@@ -5,6 +5,7 @@ import com.shanhaihen.mongo.MongoDemoApplication;
 import com.shanhaihen.mongo.base.PersonDao;
 import com.shanhaihen.mongo.entity.Page;
 import com.shanhaihen.mongo.entity.Person;
+import com.shanhaihen.mongo.entity.PersonCount;
 import com.shanhaihen.mongo.entity.PhoneCount;
 import com.shanhaihen.mongo.service.IPersonService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MongoDemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -124,6 +129,31 @@ public class PersonTest {
         );
         AggregationResults<PhoneCount> aggregate = mongoTemplate.aggregate(agg, "person", PhoneCount.class);
         System.out.println(aggregate.getMappedResults().size());
+    }
+
+    @Test
+    public void personCount() {
+        Criteria criteria = new Criteria();
+        /**
+         * 时间戳格式化成日期分组
+         */
+        Aggregation aggregation = newAggregation(
+                match(criteria),
+                project("timestamp").andExpression("{$dateToString: {date: { $add: {'$timestamp', [0]} }, format: '%Y-%m-%d %H'}}", new Date(28800000)).as("time"),
+                group("time").count().as("count"),
+                project(bind("time", "_id").and("count")),
+                sort(ASC, "time")
+        );
+//        Aggregation aggregation = newAggregation(
+//                match(criteria),
+//                project("timestamp"),
+//                group("timestamp").count().as("count"),
+//                project(bind("timestamp", "_id").and("count"))
+//        );
+        AggregationResults<PersonCount> result = mongoTemplate.aggregate(aggregation, "person", PersonCount.class);
+        List<PersonCount> results = result.getMappedResults();
+        System.out.println(results);
+
     }
 
 
